@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Random;
 public class Shape {
 	public static enum Tetrominoes {
@@ -84,6 +85,9 @@ public class Shape {
 		return color;
 	}
 
+	public String toString(){
+		return this.shapeName.toString() + ": " + Arrays.deepToString(this.coordinates);
+	}
 	/**
 	 * Monte carlo method to calculate pi. We throw random darts into a quadrant of the unit circle, which has area pi/4. So, we multiple
 	 * the ratio by 4 to get the sampled value of pi.
