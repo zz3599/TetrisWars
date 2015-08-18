@@ -79,6 +79,7 @@ public class Shape {
 		//valid shapes start at index 1
 		int index = RANDOMGENERATOR.nextInt(Tetrominoes.values().length-1) + 1;
 		return new Shape(Tetrominoes.values()[index]);
+		//return new Shape(Tetrominoes.StraightShape);
 	}	
 	
 	public Color getColor() {

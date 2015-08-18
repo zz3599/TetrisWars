@@ -12,7 +12,7 @@ import javax.swing.Timer;
 public class Game extends JPanel implements ActionListener {
 	private static final int WIDTH = 10;
 	private static final int HEIGHT = 22;
-	private static final int SLEEP_TICK = 100;
+	private static final int SLEEP_TICK = 500;
 	
 	private Timer timer;
 	private int boardWidth; 
@@ -21,6 +21,7 @@ public class Game extends JPanel implements ActionListener {
 	private Shape currentShape; 
 	private int currentShapeRow; 
 	private int currentShapeColumn;
+	private boolean ended = false;
 	public Game(int width, int height){
 		setFocusable(true);
 		addKeyListener(new InputListener(this));
@@ -60,16 +61,19 @@ public class Game extends JPanel implements ActionListener {
 	}	
 	
 	public boolean isValidShape(Shape currentShape, int row, int column){
+		if(currentShape == null){
+			return false;
+		}
 		for(int i = 0; i < currentShape.getCoordinates().length; i++){
 			int rowAdjust = -currentShape.getCoordinates()[i][0];
 			int columnAdjust = currentShape.getCoordinates()[i][1];
 			int rowInQuestion = row + rowAdjust;
 			int columnInQuestion = column + columnAdjust;
-			if ( rowInQuestion >= this.boardHeight || rowInQuestion < 0 || 
+			if ( rowInQuestion >= this.boardHeight || //if shapes are above the ceiling, it's still valid 
 					columnInQuestion >= this.boardWidth || columnInQuestion < 0){
 				return false;
 			}
-			if ( this.board[rowInQuestion][columnInQuestion].getShapeName() != Shape.Tetrominoes.NoShape){
+			if ( rowInQuestion >= 0 && this.board[rowInQuestion][columnInQuestion].getShapeName() != Shape.Tetrominoes.NoShape){
 				return false;
 			}
 		}
@@ -82,35 +86,82 @@ public class Game extends JPanel implements ActionListener {
 		g.setColor(color);
 		g.fillRect(x+1, y+1, width-2, height-2);
 		g.setColor(color.brighter());
-		g.drawLine(x, y, x+squareWidth()-1, y+1);
-		g.drawLine(x, y, x+1, y+squareHeight()-1);
+		g.drawLine(x, y, x+squareWidth()-1, y);
+		g.drawLine(x, y, x, y+squareHeight()-1);
 		g.setColor(color.darker());
-		g.drawLine(x+squareWidth()-1, y, x+squareWidth(), y+squareHeight()-1);
-		g.drawLine(x, y+squareHeight()-1, x+squareWidth()-1, y+squareHeight());
+		g.drawLine(x+squareWidth()-1, y, x+squareWidth()-1, y+squareHeight()-1);
+		g.drawLine(x, y+squareHeight()-1, x+squareWidth()-1, y+squareHeight()-1);
 	}
 	
 	public boolean finishCurrentShape(){
+		boolean canFinish = false;
 		while(isValidShape(getCurrentShape(), currentShapeRow, currentShapeColumn)){
+			canFinish = true;
 			currentShapeRow++;
 		}
-		currentShapeRow--;
-		for(int i = 0; i < currentShape.getCoordinates().length; i++){
-			int rowAdjust = -currentShape.getCoordinates()[i][0];
-			int columnAdjust = currentShape.getCoordinates()[i][1];
-			int rowInQuestion = currentShapeRow + rowAdjust;
-			int columnInQuestion = currentShapeColumn + columnAdjust;
-			if (rowInQuestion >= this.boardHeight || rowInQuestion < 0 ||
-					columnInQuestion >= this.boardWidth || columnInQuestion < 0){
-				System.out.println("Cannot finish current shape?" + currentShape + ", " + currentShapeRow + "," + currentShapeColumn);
-				return false;
+		if(canFinish){
+			currentShapeRow--;
+			for(int i = 0; i < getCurrentShape().getCoordinates().length; i++){
+				int rowAdjust = -currentShape.getCoordinates()[i][0];
+				int columnAdjust = currentShape.getCoordinates()[i][1];
+				int rowInQuestion = currentShapeRow + rowAdjust;
+				int columnInQuestion = currentShapeColumn + columnAdjust;
+				if (rowInQuestion >= this.boardHeight || rowInQuestion < 0 ||
+						columnInQuestion >= this.boardWidth || columnInQuestion < 0){
+					System.out.println("Cannot finish current shape?" + currentShape + ", " + currentShapeRow + "," + currentShapeColumn);
+					return false;
+				}
+				this.board[rowInQuestion][columnInQuestion] = currentShape;
 			}
-			this.board[rowInQuestion][columnInQuestion] = currentShape;
-		}	
-		currentShape = null;
-		currentShapeRow = 0;
-		currentShapeColumn = boardWidth/2;
-		System.out.println("Finished current shape");
+			System.out.println("Finished current shape: " + getCurrentShape() + ", " + currentShapeRow + "," + currentShapeColumn);
+			currentShape = null;
+			currentShapeRow = 0;
+			currentShapeColumn = boardWidth/2;		
+			return true;
+		} else {
+			System.out.println("Cannot finish current shape2?" + currentShape + ", " + currentShapeRow + "," + currentShapeColumn);
+			return false; 
+		}
+		
+	}
+	
+	public boolean isCompleteRow(int rowNumber){
+		for(int i = 0; i < this.boardWidth; i++){
+			if(this.board[rowNumber][i].getShapeName() == Shape.Tetrominoes.NoShape){
+				return false; 
+			}
+		}
 		return true;
+	}
+	
+	public void clearRow(int rowNumber){
+		Shape noShape = new Shape(Shape.Tetrominoes.NoShape);
+		for(int i = 0; i < this.boardWidth; i++){
+			this.board[rowNumber][i] = noShape;			
+		}
+	}
+	
+	public void clearLines(){
+		int firstRow = -1; 
+		for(int i = 0; i < this.boardHeight; i++){
+			if(isCompleteRow(i)){
+				clearRow(i);
+				if(firstRow < 0){
+					firstRow = 	i; 
+				}
+				for(int j = i-1; j >= 0; j--){
+					for(int k = 0; k < this.boardWidth; k++){
+						this.board[j+1][k] = this.board[j][k];
+					}
+				}
+				if(Math.abs(firstRow - i) >= 3){
+					System.out.println("TETRIS");
+					break;
+				}
+				
+			}
+		}
+		
 	}
 		
 	public void clearBoard(){
@@ -122,19 +173,19 @@ public class Game extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		this.currentShapeRow++;		
-		if (!isValidShape(this.getCurrentShape(), this.currentShapeRow, this.currentShapeColumn)){
+	public void actionPerformed(ActionEvent e) {		
+		if (!isValidShape(this.getCurrentShape(), this.currentShapeRow+1, this.currentShapeColumn)){
 			//cant move anymore, make next turn generate a new shape 
 			if (!this.finishCurrentShape()){
 				//game is over since we can't even place our current shape
 				//clearBoard(); 
+				currentShape = null;
+				ended = true;
 				this.timer.stop();
 			}		
-		} else {
-			//there's nothing to do, currently
-			
 		}		
+		this.currentShapeRow++;		
+		clearLines();
 		repaint();
 	}
 	
@@ -158,7 +209,11 @@ public class Game extends JPanel implements ActionListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
+			if(ended){
+				return;
+			}
 			int keyCode = e.getKeyCode();
+			
 			
 			switch(keyCode){
 			case KeyEvent.VK_UP:
@@ -182,18 +237,20 @@ public class Game extends JPanel implements ActionListener {
 			case KeyEvent.VK_DOWN:
 				currentShapeRow++;
 				if(!isValidShape(currentShape, currentShapeRow, currentShapeColumn)){
-					currentShape = null;		
-					currentShapeRow = 0;
+					currentShapeRow--;
 				}
 				break;
 			case KeyEvent.VK_SPACE:
 				if(!finishCurrentShape()){
 					//game is over if we can't place current shape
 					//clearBoard();
+					currentShape = null;
 					timer.stop();
+					ended = true;
 				}
 				break;
 			}
+			game.repaint();
 			
 			
 		}
