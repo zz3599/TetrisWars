@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Random;
 public class Shape {
+	//TODO: better hashcoding? 
+	private static int SHAPE_ID = 0; 
 	public static enum Tetrominoes {
 		NoShape, StraightShape, TShape, OShape, JShape, LShape, SShape, ZShape
 	}
@@ -26,9 +28,16 @@ public class Shape {
 	private int[][] coordinates; 
 	private Tetrominoes shapeName;  
 	private Color color; 
+	private int shapeId = SHAPE_ID++;
 	
 	public Shape(Tetrominoes shapeName){
-		this.coordinates = COORDINATES[shapeName.ordinal()];
+		if(shapeName != Tetrominoes.NoShape){
+			this.coordinates = new int[COORDINATES[shapeName.ordinal()].length][2];
+			for(int i = 0; i < COORDINATES[shapeName.ordinal()].length; i++){
+				this.coordinates[i][0] = COORDINATES[shapeName.ordinal()][i][0];
+				this.coordinates[i][1] = COORDINATES[shapeName.ordinal()][i][1];
+			}
+		}
 		this.shapeName = shapeName;
 		this.color = COLORS[shapeName.ordinal()];
 	}
@@ -87,7 +96,11 @@ public class Shape {
 	}
 
 	public String toString(){
-		return this.shapeName.toString() + ": " + Arrays.deepToString(this.coordinates);
+		return this.shapeName.toString() + ": " + Arrays.deepToString(this.coordinates)  + ", id=" + this.shapeId;
+	}
+	
+	public int hashCode(){
+		return this.shapeId; 
 	}
 	/**
 	 * Monte carlo method to calculate pi. We throw random darts into a quadrant of the unit circle, which has area pi/4. So, we multiple
