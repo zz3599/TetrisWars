@@ -22,6 +22,9 @@ public class Game extends JPanel implements ActionListener {
 	private int currentShapeRow; 
 	private int currentShapeColumn;
 	private boolean ended = false;
+	private ShapeSaver shapeSaver = new ShapeSaver();
+	
+	
 	public Game(int width, int height){
 		setFocusable(true);
 		addKeyListener(new InputListener(this));
