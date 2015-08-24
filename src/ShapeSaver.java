@@ -21,4 +21,8 @@ public class ShapeSaver {
 		System.out.println("Swapped shape " + s + " for " + swappedShape); 
 		return swappedShape;
 	}
+	
+	public Shape getSavedShape(){
+		return this.savedShape;
+	}
 }
