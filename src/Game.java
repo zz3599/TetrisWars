@@ -18,10 +18,11 @@ public class Game extends JFrame implements KeyListener {
 
 		board.setPreferredSize(new Dimension(200, 400));
 		this.saverPane = new SaverPane(this);
-		saverPane.setPreferredSize(new Dimension(200, 200));
+		saverPane.setPreferredSize(new Dimension(100, 100));
 		this.setLayout(new FlowLayout());
+		this.add(saverPane);
 		this.add(board);
-
+		
 		this.pack();
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
