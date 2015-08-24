@@ -34,10 +34,12 @@ public class BoardPane extends JPanel implements ActionListener {
 		this.timer = new Timer(SLEEP_TICK, this);
 		this.timer.start();		
 		this.clearBoard();		
-		this.currentShapeRow = 0;
+		this.resetCurrentshaperow();
 		this.currentShapeColumn = boardWidth/2;
 	}
-	
+	public void resetCurrentshaperow(){
+		this.currentShapeRow = 0;
+	}
 	public synchronized Shape getCurrentShape(){
 		if(this.currentShape == null){
 			this.currentShape = Shape.generateRandomShape();

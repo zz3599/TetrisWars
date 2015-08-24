@@ -72,7 +72,11 @@ public class SaverPane extends JPanel{
 	public void swap(){
 		if(this.game != null){
 			Shape currentShape = this.game.board.getCurrentShape();
-			this.game.board.setCurrentShape(this.shapeSaver.swapShape(currentShape));
+			Shape swappedShape = this.shapeSaver.swapShape(currentShape);
+			if(swappedShape != currentShape){
+				this.game.board.setCurrentShape(swappedShape);
+				this.game.board.resetCurrentshaperow();
+			}
 			this.game.repaint();
 		}
 	}
