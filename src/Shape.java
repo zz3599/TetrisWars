@@ -20,8 +20,8 @@ public class Shape {
 	};
 	
 	static Color[] COLORS = {
-		Color.GRAY, Color.CYAN, Color.MAGENTA, Color.YELLOW, 
-		Color.BLUE, Color.ORANGE, Color.GREEN, Color.RED
+		Color.GRAY, Color.YELLOW, Color.BLUE, Color.RED, 
+		Color.CYAN, Color.BLACK, Color.DARK_GRAY, Color.GREEN
 	};
 	
 	private static final Random RANDOMGENERATOR = new Random();
