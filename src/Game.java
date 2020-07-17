@@ -17,7 +17,7 @@ public class Game extends JFrame implements KeyListener {
     this.setSize(200, 600);
 
     board.setPreferredSize(new Dimension(200, 400));
-    this.saverPane = new SaverPane(this);
+    this.saverPane = new SaverPane();
     saverPane.setPreferredSize(new Dimension(100, 100));
     this.setLayout(new FlowLayout());
     this.add(saverPane);
@@ -41,26 +41,12 @@ public class Game extends JFrame implements KeyListener {
       return;
     }
     int keyCode = e.getKeyCode();
-
-    switch (keyCode) {
-    case KeyEvent.VK_UP:
-      board.up();
-      break;
-    case KeyEvent.VK_LEFT:
-      board.left();
-      break;
-    case KeyEvent.VK_RIGHT:
-      board.right();
-      break;
-    case KeyEvent.VK_DOWN:
-      board.down();
-      break;
-    case KeyEvent.VK_SPACE:
+    if (keyCode == KeyEvent.VK_SHIFT) {
+      saverPane.swap(this);
+    } else if (keyCode == KeyEvent.VK_SPACE) {
       board.space();
-      break;
-    case KeyEvent.VK_SHIFT:
-      saverPane.swap();
-      break;
+    } else if (KeyEventMapping.KEY_EVENTS.contains(keyCode)) {
+      board.setKeyEvent(keyCode);
     }
     board.repaint();
 
@@ -68,10 +54,13 @@ public class Game extends JFrame implements KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
+    if (KeyEventMapping.KEY_EVENTS.contains(e.getKeyCode())) {
+      board.setKeyEvent(0);
+    }
   }
 
   public static void main(String[] args) {
-    Game game = new Game();
+    new Game();
   }
 
 }

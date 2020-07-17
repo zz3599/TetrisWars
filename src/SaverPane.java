@@ -6,14 +6,12 @@ import java.awt.Color;
  * TODO: this class needs to be refactored to be related to BoardPane
  **/
 public class SaverPane extends JPanel {
-  private Game game;
   private ShapeSaver shapeSaver = new ShapeSaver();
   static final int WIDTH = 4;
   static final int HEIGHT = 4;
   Shape[][] board;
 
-  public SaverPane(Game game) {
-    this.game = game;
+  public SaverPane() {
     this.board = new Shape[HEIGHT][WIDTH];
     this.clearBoard();
   }
@@ -70,15 +68,15 @@ public class SaverPane extends JPanel {
     return (int) this.getSize().getHeight() / HEIGHT;
   }
 
-  public void swap() {
-    if (this.game != null) {
-      Shape currentShape = this.game.board.getCurrentShape();
+  public void swap(Game game) {
+    if (game != null) {
+      Shape currentShape = game.board.getCurrentShape();
       Shape swappedShape = this.shapeSaver.swapShape(currentShape);
       if (swappedShape != currentShape) {
-        this.game.board.setCurrentShape(swappedShape);
-        this.game.board.resetCurrentshaperow();
+        game.board.setCurrentShape(swappedShape);
+        game.board.resetCurrentshaperow();
       }
-      this.game.repaint();
+      game.repaint();
     }
   }
 

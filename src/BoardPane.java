@@ -13,7 +13,8 @@ import javax.swing.Timer;
  *
  */
 public class BoardPane extends JPanel implements ActionListener {
-  private static final int SLEEP_TICK = 500;
+  private static final int SLEEP_TICKS = 100;
+  private static final int PAINT_TICKS = 500;
 
   private Timer timer;
   private int boardWidth;
@@ -23,13 +24,15 @@ public class BoardPane extends JPanel implements ActionListener {
   private int currentShapeRow;
   private int currentShapeColumn;
   private boolean ended = false;
+  private int currentKeyEvent = 0;
+  private int sleepTicks = 0;
 
   public BoardPane(int width, int height) {
     setFocusable(true);
     this.boardWidth = width;
     this.boardHeight = height;
     this.board = new Shape[boardHeight][boardWidth];
-    this.timer = new Timer(SLEEP_TICK, this);
+    this.timer = new Timer(SLEEP_TICKS, this);
     this.timer.start();
     this.clearBoard();
     this.resetCurrentshaperow();
@@ -191,6 +194,12 @@ public class BoardPane extends JPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
+    // Do keyboard updates every SLEEP_TICKS, game state updates every PAINT_TICKS
+    this.sleepTicks++;
+    keyEventUpdate();
+    if (this.sleepTicks % (PAINT_TICKS / SLEEP_TICKS) != 0) {
+      return;
+    }
     if (!isValidShape(this.getCurrentShape(), this.currentShapeRow + 1, this.currentShapeColumn)) {
       // cant move anymore, make next turn generate a new shape
       if (!this.finishCurrentShape()) {
@@ -220,6 +229,30 @@ public class BoardPane extends JPanel implements ActionListener {
 
   public void setEnded(boolean ended) {
     this.ended = ended;
+  }
+
+  // Key Event handling
+  public void setKeyEvent(int keyEvent) {
+    this.currentKeyEvent = keyEvent;
+  }
+
+  private void keyEventUpdate() {
+    switch (this.currentKeyEvent) {
+    case KeyEvent.VK_UP:
+      this.up();
+      break;
+    case KeyEvent.VK_LEFT:
+      this.left();
+      break;
+    case KeyEvent.VK_RIGHT:
+      this.right();
+      break;
+    case KeyEvent.VK_DOWN:
+      this.down();
+      break;
+    }
+    clearLines();
+    repaint();
   }
 
   public void up() {

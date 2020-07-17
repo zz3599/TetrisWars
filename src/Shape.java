@@ -10,8 +10,6 @@ public class Shape {
     NoShape, StraightShape, TShape, OShape, JShape, LShape, SShape, ZShape
   }
 
-  public static final Shape NO_SHAPE = new Shape(Shape.Tetrominoes.NoShape);
-
   static int[][][] COORDINATES = { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
       { { 0, 1 }, { 0, 0 }, { 0, -1 }, { 0, -2 } }, { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 0, -1 } },
       { { 1, -1 }, { 0, 0 }, { 0, -1 }, { 1, 0 } }, { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, -1 } },
@@ -20,6 +18,12 @@ public class Shape {
 
   static Color[] COLORS = { Color.GRAY, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLUE, Color.ORANGE, Color.GREEN,
       Color.RED };
+
+  public static final Shape NO_SHAPE = new Shape(Shape.Tetrominoes.NoShape);
+
+  static final Shape[] ALL_SHAPES = new Shape[] { NO_SHAPE, new Shape(Tetrominoes.StraightShape),
+      new Shape(Tetrominoes.TShape), new Shape(Tetrominoes.OShape), new Shape(Tetrominoes.JShape),
+      new Shape(Tetrominoes.LShape), new Shape(Tetrominoes.SShape), new Shape(Tetrominoes.ZShape) };
 
   private static final Random RANDOMGENERATOR = new Random();
   private int[][] coordinates;
